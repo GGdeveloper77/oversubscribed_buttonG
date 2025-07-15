@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "app.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app.py"
+    }
+  ],
+  "env": {
+    "TELEGRAM_API_ID": "@telegram_api_id",
+    "TELEGRAM_API_HASH": "@telegram_api_hash", 
+    "TELEGRAM_SESSION_STRING": "@telegram_session_string",
+    "PERPLEXITY_API_KEY": "@perplexity_api_key",
+    "GOOGLE_SHEET_ID": "@google_sheet_id",
+    "GOOGLE_SERVICE_ACCOUNT_JSON": "@google_service_account_json"
+  },
+  "functions": {
+    "app.py": {
+      "maxDuration": 300
+    }
+  }
+} 
