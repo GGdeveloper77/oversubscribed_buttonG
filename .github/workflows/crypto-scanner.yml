@@ -1,0 +1,131 @@
+name: 🚀 Crypto Projects Scanner
+
+on:
+  # Run every 6 hours automatically
+  schedule:
+    - cron: '0 */6 * * *'
+  
+  # Allow manual trigger from GitHub UI
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📁 Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: 🐍 Set up Python 3.9
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: 📦 Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: 🔑 Setup session file
+      run: |
+        echo "${{ secrets.TELEGRAM_SESSION_STRING }}" > session_string.txt
+        
+    - name: 🔍 Run Fresh Scanner
+      env:
+        TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
+        TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+        TELEGRAM_SESSION_STRING: ${{ secrets.TELEGRAM_SESSION_STRING }}
+        PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+        GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+        GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+      run: |
+        echo "🚀 Starting Fresh Crypto Scanner..."
+        echo "📅 Scan started at: $(date)"
+        echo "🎯 Target groups: [OS] Projects, Oversubscribed groups, etc."
+        echo
+        
+        python3 -c "
+        import asyncio
+        import sys
+        import os
+        import json
+        from datetime import datetime
+        
+        # Import fresh_scanner functions
+        from fresh_scanner import run_daily_scan, upload_to_google_sheets
+        
+        async def main():
+            print('🔍 Running daily crypto scan...')
+            print('📱 Scanning Telegram groups for new projects...')
+            print()
+            
+            try:
+                # Run the daily scan (this scans all groups and finds projects)
+                results = await run_daily_scan()
+                
+                if 'error' in results:
+                    print(f'❌ Scanner error: {results[\"error\"]}')
+                    return False
+                
+                projects_found = results.get('projects_found', 0)
+                fresh_projects = results.get('fresh_projects', 0)
+                duplicates = results.get('duplicate_projects', 0)
+                uploaded = results.get('projects_uploaded', 0)
+                messages_scanned = results.get('messages_scanned', 0)
+                
+                print('📊 SCAN RESULTS:')
+                print(f'   💬 Messages scanned: {messages_scanned}')
+                print(f'   🔥 Total projects found: {projects_found}')
+                print(f'   🔄 Duplicates filtered: {duplicates}')
+                print(f'   ✨ Fresh projects: {fresh_projects}')
+                print(f'   📤 Uploaded to sheets: {uploaded}')
+                print()
+                
+                if fresh_projects > 0:
+                    print('🎉 SUCCESS! New crypto projects found and uploaded!')
+                    projects = results.get('projects', [])
+                    for i, project in enumerate(projects[:5], 1):  # Show first 5
+                        name = project.get('project_name', 'Unknown')
+                        source = project.get('source_group', 'Unknown')
+                        print(f'   {i}. {name} (from {source})')
+                    
+                    if len(projects) > 5:
+                        print(f'   ... and {len(projects) - 5} more projects')
+                    
+                    print()
+                    print(f'🔗 Check your Google Sheets: https://docs.google.com/spreadsheets/d/{os.getenv(\"GOOGLE_SHEET_ID\")}')
+                else:
+                    print('📭 No new crypto projects found in the last 24 hours.')
+                    print('💡 This could mean:')
+                    print('   • Groups have been quiet')
+                    print('   • All recent projects were already scanned')
+                    print('   • No messages met the crypto project criteria')
+                
+                print()
+                print(f'✅ Scan completed at: {datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\")} UTC')
+                return True
+                
+            except Exception as e:
+                print(f'❌ SCAN FAILED: {str(e)}')
+                print('💡 This might be due to:')
+                print('   • Invalid API credentials')
+                print('   • Network connectivity issues')  
+                print('   • Telegram session expired')
+                print('   • Google Sheets access problems')
+                return False
+        
+        # Run the scanner
+        success = asyncio.run(main())
+        sys.exit(0 if success else 1)
+        "
+        
+    - name: 🎉 Scan Complete
+      if: always()
+      run: |
+        echo
+        echo "════════════════════════════════════════"
+        echo "🎯 GitHub Actions Crypto Scanner Complete"
+        echo "📅 Finished at: $(date)"
+        echo "🔄 Next scan in 6 hours (automatic)"
+        echo "📊 Check your Google Sheets for results"
+        echo "════════════════════════════════════════" 
