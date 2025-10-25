@@ -16,12 +16,12 @@ import threading
 app = Flask(__name__)
 
 # Your working credentials
-TELEGRAM_API_ID = 28632541
-TELEGRAM_API_HASH = "b14125bcf447f6f91d43e0f8beea56fb"
-TELEGRAM_SESSION_STRING = "1ApWapzMBu0vNsZi2PE2EB5uY8_GyLAH_DmpOaNwPAwehkuefbGMLkUjy9Etm5zt3ijiPsbq9QZ-qzs7v_uF2gjibY-GBArXiZuzBW-Ob6o_QJKR_YYrBq3T3jiB_1My7LZpI3TrDPjCL5FqPjdhJsILc-B3JoA3OiMi-WJ63kGEUgpQzhS701mv5zEzw09KmY5UTp7-MAiTZTB98a1uva4mKF1Hh08N2Q0qeTbkcZlNbXMDAbUJBE2iWKlNQMeDLP-GvJeQ3cSGUxFyASRGx4Wr8HhManTjTgDqm5PAizZzURRlU-Z1AypvOdegD-ZDycbQICX-H-6N1xZV_d3Aui6cBXaSnL40="
+TELEGRAM_API_ID = X
+TELEGRAM_API_HASH = ""
+TELEGRAM_SESSION_STRING = ""
 
-PERPLEXITY_API_KEY = "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"
-GOOGLE_SHEET_ID = "1v96qj9_ZS2YyJo9-PAGJShc7xMesPb55Gt0YtqeJop4"
+PERPLEXITY_API_KEY = ""
+GOOGLE_SHEET_ID = ""
 
 # Google service account key - load from file or environment
 def get_google_service_key():
